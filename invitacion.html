@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitación Oficial — Daniel & Jezabel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Montserrat:wght@200;300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold-primary: #BF953F;
+            --gold-light: #FCF6BA;
+            --gold-medium: #B38728;
+            --gold-dark: #AA771C;
+            --gold-accent: #E6C675;
+            --bg-cream: #FAF8F5;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-cream);
+            color: #211f1c;
+            overflow-x: hidden;
+            transition: background-color 0.5s ease;
+        }
+
+        .font-serif-custom { font-family: 'Cinzel', serif; }
+        .font-serif-italic { font-family: 'Playfair Display', serif; font-style: italic; }
+
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #8C6D2B 0%, #D4AF37 30%, #9A7B38 65%, #594214 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .botanical-card {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(212, 175, 55, 0.28);
+            box-shadow: 0 20px 50px rgba(180, 140, 50, 0.07), 0 4px 15px rgba(0, 0, 0, 0.02);
+            position: relative;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .btn-luxury-gold {
+            position: relative;
+            background: linear-gradient(135deg, #BF953F 0%, #E6C675 40%, #D4AF37 70%, #AA771C 100%);
+            background-size: 200% auto;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 6px 20px rgba(191, 149, 63, 0.3);
+            overflow: hidden;
+        }
+
+        .btn-luxury-gold:hover {
+            background-position: right center;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.45);
+        }
+
+        .btn-secondary-outline {
+            border: 1px solid rgba(191, 149, 63, 0.5);
+            color: #8C6D2B;
+            background: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary-outline:hover {
+            background: rgba(243, 229, 171, 0.3);
+            border-color: #8C6D2B;
+        }
+
+        .view-wrapper {
+            transition: max-width 0.5s ease-in-out, padding 0.5s ease-in-out;
+        }
+
+        .view-mobile {
+            max-width: 480px !important;
+            margin: 0 auto;
+        }
+
+        .view-desktop {
+            max-width: 800px !important;
+            margin: 0 auto;
+        }
+
+        .modal-overlay {
+            background: rgba(12, 12, 12, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        .step-card {
+            display: none;
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        .step-card.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #FAF8F5; }
+        ::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 4px; }
+
+        input[type=range] {
+            accent-color: #BF953F;
+        }
+    </style>
+</head>
+<body class="min-h-screen py-8 px-3 flex flex-col justify-between items-center relative select-none" onclick="startAudioOnFirstInteraction()">
+
+    <canvas id="fallingLeavesCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+    <!-- ARCHIVO DE AUDIO LOCAL (musica.mp3) -->
+    <audio id="weddingMusic" loop preload="auto">
+        <source src="musica.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- CONTROLADOR DE MÚSICA FLOTANTE -->
+    <div class="fixed top-6 right-6 z-40 flex flex-col items-end">
+        <button onclick="toggleMusicControls(event)" id="musicToggleBtn" class="btn-luxury-gold p-3.5 rounded-full shadow-2xl flex items-center justify-center border border-white/50 text-base">
+            🎵
+        </button>
+
+        <div id="musicPanel" class="hidden mt-3 p-4 rounded-2xl bg-white/95 border border-amber-500/30 shadow-2xl backdrop-blur-md w-56 space-y-3 transform transition-all text-xs">
+            <div class="flex items-center justify-between font-semibold text-amber-900">
+                <span>Música de Fondo</span>
+                <span id="musicStatusText" class="text-[10px] text-amber-600 font-bold">⏸ En Pausa</span>
+            </div>
+            
+            <p class="text-[10px] text-stone-500 truncate">A Thousand Years — Violín Cover</p>
+
+            <div class="flex items-center space-x-2 pt-1">
+                <button onclick="togglePlayPause(event)" id="playPauseBtn" class="btn-luxury-gold px-3 py-1.5 rounded-lg text-xs font-bold">
+                    ▶ Reproducir
+                </button>
+                <div class="flex-1 flex items-center space-x-1">
+                    <span class="text-[10px]">🔊</span>
+                    <input type="range" id="volumeControl" min="0" max="1" step="0.05" value="0.7" class="w-full h-1 bg-amber-200 rounded-lg cursor-pointer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="deviceModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay transition-all duration-500">
+        <div class="max-w-md w-full bg-stone-900/95 border border-amber-500/40 rounded-3xl p-8 text-center shadow-2xl text-white space-y-6 transform scale-100 transition-all relative overflow-hidden">
+            
+            <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-amber-600/20 to-amber-300/20 border border-amber-400/40 flex items-center justify-center mx-auto text-amber-300 text-2xl shadow-inner">
+                🌿
+            </div>
+            
+            <div class="space-y-2">
+                <h3 class="font-serif-custom text-2xl font-bold text-amber-200 tracking-wide">Cambiar Formato</h3>
+                <p class="text-xs text-stone-300 font-light leading-relaxed">
+                    Selecciona el modo de visualización que prefieras:
+                </p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 pt-2">
+                <button onclick="setMode('mobile')" class="p-5 rounded-2xl bg-stone-800/80 border border-amber-500/30 hover:border-amber-400 transition text-center space-y-3 group hover:bg-stone-800">
+                    <div class="text-3xl group-hover:scale-110 transition-transform duration-300">📱</div>
+                    <div>
+                        <div class="text-xs font-semibold text-amber-300">Modo Móvil</div>
+                        <div class="text-[10px] text-stone-400 font-light mt-0.5">Pantalla Celular</div>
+                    </div>
+                </button>
+
+                <button onclick="setMode('desktop')" class="p-5 rounded-2xl bg-stone-800/80 border border-amber-500/30 hover:border-amber-400 transition text-center space-y-3 group hover:bg-stone-800">
+                    <div class="text-3xl group-hover:scale-110 transition-transform duration-300">💻</div>
+                    <div>
+                        <div class="text-xs font-semibold text-amber-300">Modo Escritorio</div>
+                        <div class="text-[10px] text-stone-400 font-light mt-0.5">Vista Panorámica</div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-6 right-6 z-40">
+        <button onclick="toggleDeviceModal(event)" class="btn-luxury-gold p-3.5 rounded-full shadow-2xl flex items-center space-x-2 text-xs font-bold border border-white/50">
+            <span id="currentModeIcon" class="text-base">📱</span>
+            <span class="hidden sm:inline uppercase tracking-widest text-[10px]" id="currentModeText">Cambiar Vista</span>
+        </button>
+    </div>
+
+    <main id="mainWrapper" class="w-full view-wrapper my-auto z-10 relative space-y-4">
+
+        <div class="w-full max-w-xs mx-auto flex items-center justify-between px-2 mb-2">
+            <span id="stepIndicatorText" class="text-[10px] font-bold uppercase tracking-widest text-amber-800 font-serif-custom">Paso 1 de 5</span>
+            <div class="w-32 h-1.5 bg-amber-200/50 rounded-full overflow-hidden">
+                <div id="stepProgressBar" class="h-full bg-gradient-to-r from-amber-500 to-amber-700 transition-all duration-500" style="width: 20%;"></div>
+            </div>
+        </div>
+
+        <div id="step1" class="step-card active">
+            <section class="botanical-card p-8 sm:p-12 rounded-[2.5rem] text-center relative overflow-hidden space-y-6">
+                <div class="w-14 h-14 rounded-full bg-amber-50 border border-amber-200/80 flex items-center justify-center mx-auto text-amber-700 shadow-sm text-2xl">
+                    📜
+                </div>
+                
+                <p class="font-serif-italic text-lg sm:text-xl text-stone-700 leading-relaxed max-w-lg mx-auto">
+                    «Después de un tiempo maravilloso juntos, unimos nuestras vidas ante la ley y ante las personas que más queremos. Acompáñanos a celebrar nuestra boda civil.»
+                </p>
+
+                <div class="pt-2 flex justify-center items-center space-x-2">
+                    <span class="w-12 h-[1px] bg-amber-300"></span>
+                    <span class="text-amber-600 text-xs">⚖️</span>
+                    <span class="w-12 h-[1px] bg-amber-300"></span>
+                </div>
+
+                <div class="pt-6 flex justify-end">
+                    <button onclick="nextStep()" class="btn-luxury-gold px-8 py-3.5 rounded-2xl text-xs uppercase tracking-widest font-bold flex items-center space-x-2">
+                        <span>Siguiente</span>
+                        <span>→</span>
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <div id="step2" class="step-card">
+            <section class="botanical-card p-8 sm:p-14 rounded-[2.5rem] text-center relative overflow-hidden space-y-6">
+                <svg class="absolute top-2 left-2 w-20 h-20 text-amber-600/30 pointer-events-none" viewBox="0 0 100 100" fill="currentColor">
+                    <path d="M10,10 Q30,10 50,30 Q30,50 10,10 Z M20,20 Q40,5 60,25 Q35,40 20,20 Z" />
+                    <circle cx="15" cy="15" r="3" fill="#D4AF37"/>
+                </svg>
+
+                <div class="space-y-2">
+                    <p class="text-[10px] sm:text-xs uppercase tracking-[0.35em] text-amber-800 font-semibold font-serif-custom">Nuestra Boda Civil</p>
+                    <div class="flex items-center justify-center space-x-3">
+                        <span class="w-8 h-[1px] bg-amber-400/60"></span>
+                        <span class="text-amber-600 text-sm">🌿</span>
+                        <span class="w-8 h-[1px] bg-amber-400/60"></span>
+                    </div>
+                </div>
+
+                <h1 class="text-3xl sm:text-5xl font-extrabold font-serif-custom gold-gradient-text leading-tight my-4 tracking-wide">
+                    Daniel Guzmán Rosales<br>
+                    <span class="text-xl sm:text-2xl font-serif-italic font-normal text-stone-400 block my-2">&</span>
+                    Jezabel Guerrero Uribe
+                </h1>
+
+                <p class="text-stone-600 text-xs sm:text-sm font-light max-w-lg mx-auto leading-relaxed">
+                    Junto a nuestras familias, tenemos el honor de invitarte a celebrar el inicio de nuestra vida juntos.
+                </p>
+
+                <div class="pt-6 flex justify-between items-center">
+                    <button onclick="prevStep()" class="btn-secondary-outline px-6 py-3.5 rounded-2xl text-xs uppercase tracking-widest font-bold">
+                        ← Anterior
+                    </button>
+                    <button onclick="nextStep()" class="btn-luxury-gold px-8 py-3.5 rounded-2xl text-xs uppercase tracking-widest font-bold">
+                        Siguiente →
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <div id="step3" class="step-card">
+            <section class="botanical-card p-8 sm:p-12 rounded-[2.5rem] text-center space-y-6 relative overflow-hidden">
+                <div class="space-y-3">
+                    <div class="w-12 h-12 rounded-full bg-amber-50 border border-amber-200/80 flex items-center justify-center mx-auto text-amber-700 shadow-sm text-lg">
+                        🗓️
+                    </div>
+                    <h2 class="font-serif-custom text-2xl font-bold text-stone-800">Fecha Especial</h2>
+                    <p class="text-xs uppercase tracking-widest text-amber-800 font-semibold">20 DE DICIEMBRE</p>
+                </div>
+
+                <div class="py-3 border-y border-amber-200/50 space-y-1">
+                    <p class="text-stone-700 text-xs sm:text-sm">Ceremonia al Civil</p>
+                    <p class="text-2xl font-serif-custom font-extrabold text-amber-900">4:00 PM</p>
+                </div>
+
+                <div class="space-y-2">
+                    <p class="text-[10px] uppercase tracking-widest text-stone-400 font-medium">Tiempo Restante</p>
+                    <div class="grid grid-cols-4 gap-2">
+                        <div class="bg-amber-50/90 p-3 rounded-2xl border border-amber-200/60 shadow-xs">
+                            <span id="days" class="block text-xl font-bold text-amber-900 font-serif-custom">00</span>
+                            <span class="text-[9px] uppercase tracking-wider text-stone-500 font-medium">Días</span>
+                        </div>
+                        <div class="bg-amber-50/90 p-3 rounded-2xl border border-amber-200/60 shadow-xs">
+                            <span id="hours" class="block text-xl font-bold text-amber-900 font-serif-custom">00</span>
+                            <span class="text-[9px] uppercase tracking-wider text-stone-500 font-medium">Horas</span>
+                        </div>
+                        <div class="bg-amber-50/90 p-3 rounded-2xl border border-amber-200/60 shadow-xs">
+                            <span id="minutes" class="block text-xl font-bold text-amber-900 font-serif-custom">00</span>
+                            <span class="text-[9px] uppercase tracking-wider text-stone-500 font-medium">Min</span>
+                        </div>
+                        <div class="bg-amber-50/90 p-3 rounded-2xl border border-amber-200/60 shadow-xs">
+                            <span id="seconds" class="block text-xl font-bold text-amber-900 font-serif-custom">00</span>
+                            <span class="text-[9px] uppercase tracking-wider text-stone-500 font-medium">Seg</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-6 flex justify-between items-center">
+                    <button onclick="prevStep()" class="btn-secondary-outline px-6 py-3.5 rounded-2xl text-xs uppercase tracking-widest font-bold">
+                        ← Anterior
+                    </button>
+                    <button onclick="nextStep()" class="btn-luxury-gold px-8 py-3.5 rounded-2xl text-xs uppercase tracking-widest font-bold">
+                        Siguiente →
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <div id="step4" class="step-card">
+            <section class="botanical-card p-8 sm:p-12 rounded-[2.5rem] text-center space-y-6 relative overflow-hidden">
+                <div class="space-y-3">
+                    <div class="w-12 h-12 rounded-full bg-amber-50 border border-amber-200/80 flex items-center justify-center mx-auto text-amber-700 shadow-sm text-lg">
+                        📍
+                    </div>
+                    <h2 class="font-serif-custom text-2xl font-bold text-stone-800">Lugar del Evento</h2>
+                    <p class="text-xs uppercase tracking-widest text-amber-800 font-semibold">Salón Altamira</p>
+                </div>
+
+                <div class="space-y-2 text-stone-600 text-sm font-light my-2">
+                    <p class="font-medium text-stone-800 text-base">Adolfo López Mateos</p>
+                    <p>Los Alamitos, CP 20210</p>
+                    <p class="text-xs text-amber-800 font-semibold">Aguascalientes, Ags.</p>
+                </div>
+
+                <div class="pt-2">
+                    <a href="https://maps.google.com/maps?q=22.257104873657227%2C-102.25045013427734&z=17&hl=es" target="_blank" class="btn-luxury-gold w-full py-4 rounded-2xl inline-block text-xs uppercase tracking-widest font-bold">
+                        Ver Ubicación en Mapa
+                    </a>
+                </div>
+
+                <div class="pt-6 flex justify-between items-center">
+                    <button onclick="prevStep()" class="btn-secondary-outline px-6 py-3.5 rounded-2xl text-xs uppercase tracking-widest font-bold">
+                        ← Anterior
+                    </button>
+                    <button onclick="nextStep()" class="btn-luxury-gold px-8 py-3.5 rounded-2xl text-xs uppercase tracking-widest font-bold">
+                        Confirmar Asistencia →
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <div id="step5" class="step-card">
+            <section class="botanical-card p-8 sm:p-12 rounded-[2.5rem] space-y-6 relative overflow-hidden">
+                
+                <div class="text-center space-y-2">
+                    <div class="inline-block p-2 rounded-full bg-amber-50 border border-amber-200/60 mb-1 text-amber-700 text-sm">
+                        ✉️
+                    </div>
+                    <h2 class="font-serif-custom text-2xl sm:text-3xl font-bold text-stone-800">Confirmación de Asistencia</h2>
+                    <p class="text-xs sm:text-sm text-stone-500 max-w-md mx-auto leading-relaxed">
+                        Por favor confirma tu respuesta para asegurar tu lugar.
+                    </p>
+                </div>
+
+                <form id="rsvpForm" class="space-y-4 max-w-lg mx-auto">
+                    
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-stone-700 mb-1.5">Nombre Completo</label>
+                        <input type="text" id="nombre" required placeholder="Ingresa tu nombre y apellido" class="w-full px-5 py-3.5 bg-stone-50/80 border border-stone-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-stone-700 mb-1.5">¿Asistirás?</label>
+                            <select id="asistencia" class="w-full px-5 py-3.5 bg-stone-50/80 border border-stone-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm">
+                                <option value="Sí asistiré">¡Sí, con mucho gusto!</option>
+                                <option value="No asistiré">Lo siento, no podré asistir</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-stone-700 mb-1.5">Número de Pases</label>
+                            <input type="number" id="pases" min="1" max="5" value="1" class="w-full px-5 py-3.5 bg-stone-50/80 border border-stone-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-stone-700 mb-1.5">Mensaje para los Novios (Opcional)</label>
+                        <textarea id="mensaje" rows="2" placeholder="Escribe tus buenos deseos..." class="w-full px-5 py-3.5 bg-stone-50/80 border border-stone-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm"></textarea>
+                    </div>
+
+                    <button type="submit" id="btnSubmit" class="btn-luxury-gold w-full py-4 rounded-2xl text-xs uppercase tracking-widest font-bold">
+                        Enviar Confirmación
+                    </button>
+                </form>
+
+                <div id="successMsg" class="hidden text-center p-8 bg-emerald-50/90 border border-emerald-200 text-emerald-900 rounded-3xl space-y-3">
+                    <div class="text-3xl">🌸</div>
+                    <h3 class="font-serif-custom text-xl font-bold">¡Respuesta Registrada!</h3>
+                    <p class="text-xs text-emerald-700 max-w-xs mx-auto leading-relaxed">
+                        Muchas gracias. Hemos guardado tus datos en nuestra lista de invitados.
+                    </p>
+                </div>
+
+                <div class="pt-4 flex justify-start">
+                    <button onclick="prevStep()" class="btn-secondary-outline px-6 py-3 rounded-2xl text-xs uppercase tracking-widest font-bold">
+                        ← Anterior
+                    </button>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <footer class="text-center text-xs text-stone-400 py-4 space-y-2 z-10 relative">
+        <p class="font-serif-custom tracking-[0.2em] text-stone-500">DANIEL & JEZABEL • 2026</p>
+        <p><a href="index.html" class="text-amber-800 underline font-medium hover:text-amber-600 transition text-xs">← Volver a la Portada</a></p>
+    </footer>
+
+    <script>
+        const audio = document.getElementById('weddingMusic');
+        audio.volume = 0.7;
+        let isStarted = false;
+
+        function startAudioOnFirstInteraction() {
+            if (!isStarted) {
+                audio.play().then(() => {
+                    isStarted = true;
+                    updateMusicUI(true);
+                }).catch(e => console.log(e));
+            }
+        }
+
+        function toggleMusicControls(e) {
+            if (e) e.stopPropagation();
+            const panel = document.getElementById('musicPanel');
+            panel.classList.toggle('hidden');
+        }
+
+        function togglePlayPause(e) {
+            if (e) e.stopPropagation();
+            if (audio.paused) {
+                audio.play();
+                isStarted = true;
+                updateMusicUI(true);
+            } else {
+                audio.pause();
+                updateMusicUI(false);
+            }
+        }
+
+        function updateMusicUI(isPlaying) {
+            const btn = document.getElementById('playPauseBtn');
+            const status = document.getElementById('musicStatusText');
+            if (isPlaying) {
+                btn.innerText = '⏸ Pausa';
+                status.innerText = '▶ Sonando';
+                status.className = 'text-[10px] text-emerald-600 font-bold';
+            } else {
+                btn.innerText = '▶ Reproducir';
+                status.innerText = '⏸ En Pausa';
+                status.className = 'text-[10px] text-amber-600 font-bold';
+            }
+        }
+
+        document.getElementById('volumeControl').addEventListener('input', function(e) {
+            audio.volume = e.target.value;
+        });
+
+        const canvas = document.getElementById('fallingLeavesCanvas');
+        const ctx = canvas.getContext('2d');
+        let leaves = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class FallingLeaf {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = -20;
+                this.size = Math.random() * 12 + 8;
+                this.speedY = Math.random() * 0.8 + 0.4;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = (Math.random() - 0.5) * 1.5;
+                this.opacity = Math.random() * 0.5 + 0.2;
+                this.color = Math.random() > 0.5 ? '#D4AF37' : '#BF953F';
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.x += Math.sin(this.y / 30) * 0.5 + this.speedX;
+                this.rotation += this.rotationSpeed;
+
+                if (this.y > canvas.height + 20) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate((this.rotation * Math.PI) / 180);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.opacity;
+
+                ctx.beginPath();
+                ctx.moveTo(0, -this.size);
+                ctx.quadraticCurveTo(this.size / 2, 0, 0, this.size);
+                ctx.quadraticCurveTo(-this.size / 2, 0, 0, -this.size);
+                ctx.fill();
+
+                ctx.restore();
+            }
+        }
+
+        for (let i = 0; i < 35; i++) {
+            const leaf = new FallingLeaf();
+            leaf.y = Math.random() * canvas.height;
+            leaves.push(leaf);
+        }
+
+        function animateLeaves() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            leaves.forEach(leaf => {
+                leaf.update();
+                leaf.draw();
+            });
+            requestAnimationFrame(animateLeaves);
+        }
+        animateLeaves();
+
+        let currentStep = 1;
+        const totalSteps = 5;
+
+        function updateStepView() {
+            for (let i = 1; i <= totalSteps; i++) {
+                const el = document.getElementById(`step${i}`);
+                if (i === currentStep) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            }
+
+            document.getElementById('stepIndicatorText').innerText = `Paso ${currentStep} de ${totalSteps}`;
+            document.getElementById('stepProgressBar').style.width = `${(currentStep / totalSteps) * 100}%`;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextStep() {
+            startAudioOnFirstInteraction();
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateStepView();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepView();
+            }
+        }
+
+        function applyViewMode(mode) {
+            const wrapper = document.getElementById('mainWrapper');
+            const icon = document.getElementById('currentModeIcon');
+
+            if (mode === 'mobile') {
+                wrapper.classList.remove('view-desktop');
+                wrapper.classList.add('view-mobile');
+                icon.innerText = '📱';
+            } else {
+                wrapper.classList.remove('view-mobile');
+                wrapper.classList.add('view-desktop');
+                icon.innerText = '💻';
+            }
+        }
+
+        function setMode(mode) {
+            localStorage.setItem('weddingViewMode', mode);
+            applyViewMode(mode);
+            const modal = document.getElementById('deviceModal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => modal.classList.add('hidden'), 500);
+        }
+
+        function toggleDeviceModal(e) {
+            if (e) e.stopPropagation();
+            const modal = document.getElementById('deviceModal');
+            modal.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedMode = localStorage.getItem('weddingViewMode') || 'mobile';
+            applyViewMode(savedMode);
+            document.getElementById('deviceModal').classList.add('hidden', 'opacity-0', 'pointer-events-none');
+        });
+
+        const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycby_gYkO5_fJnTbmTlaJentm54qsIZwV-1UR4Ih-mWTfv6V2EIkSrO8Oi2y8GS4MInFM/exec";
+
+        document.getElementById('rsvpForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('btnSubmit');
+            btn.disabled = true;
+            btn.innerText = "PROCESANDO...";
+
+            const data = {
+                nombre: document.getElementById('nombre').value,
+                asistencia: document.getElementById('asistencia').value,
+                pases: document.getElementById('pases').value,
+                mensaje: document.getElementById('mensaje').value
+            };
+
+            fetch(ENDPOINT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(() => {
+                document.getElementById('rsvpForm').classList.add('hidden');
+                document.getElementById('successMsg').classList.remove('hidden');
+            })
+            .catch(error => {
+                console.error(error);
+                alert('Ocurrió un inconveniente al enviar la confirmación. Inténtalo nuevamente.');
+                btn.disabled = false;
+                btn.innerText = "ENVIAR CONFIRMACIÓN";
+            });
+        });
+
+        const targetDate = new Date("December 20, 2026 16:00:00").getTime();
+
+        setInterval(() => {
+            const now = new Date().getTime();
+            const diff = targetDate - now;
+
+            if (diff > 0) {
+                document.getElementById('days').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
+                document.getElementById('hours').innerText = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                document.getElementById('minutes').innerText = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                document.getElementById('seconds').innerText = Math.floor((diff % (1000 * 60)) / 1000);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
