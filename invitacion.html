@@ -107,47 +107,13 @@
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #FAF8F5; }
         ::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 4px; }
-
-        input[type=range] {
-            accent-color: #BF953F;
-        }
     </style>
 </head>
-<body class="min-h-screen py-8 px-3 flex flex-col justify-between items-center relative select-none" onclick="startAudioOnFirstInteraction()">
+<body class="min-h-screen py-8 px-3 flex flex-col justify-between items-center relative select-none">
 
     <canvas id="fallingLeavesCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
 
-    <!-- ARCHIVO DE AUDIO LOCAL (musica.mp3) -->
-    <audio id="weddingMusic" loop preload="auto">
-        <source src="musica.mp3" type="audio/mpeg">
-    </audio>
-
-    <!-- CONTROLADOR DE MÚSICA FLOTANTE -->
-    <div class="fixed top-6 right-6 z-40 flex flex-col items-end">
-        <button onclick="toggleMusicControls(event)" id="musicToggleBtn" class="btn-luxury-gold p-3.5 rounded-full shadow-2xl flex items-center justify-center border border-white/50 text-base">
-            🎵
-        </button>
-
-        <div id="musicPanel" class="hidden mt-3 p-4 rounded-2xl bg-white/95 border border-amber-500/30 shadow-2xl backdrop-blur-md w-56 space-y-3 transform transition-all text-xs">
-            <div class="flex items-center justify-between font-semibold text-amber-900">
-                <span>Música de Fondo</span>
-                <span id="musicStatusText" class="text-[10px] text-amber-600 font-bold">⏸ En Pausa</span>
-            </div>
-            
-            <p class="text-[10px] text-stone-500 truncate">A Thousand Years — Violín Cover</p>
-
-            <div class="flex items-center space-x-2 pt-1">
-                <button onclick="togglePlayPause(event)" id="playPauseBtn" class="btn-luxury-gold px-3 py-1.5 rounded-lg text-xs font-bold">
-                    ▶ Reproducir
-                </button>
-                <div class="flex-1 flex items-center space-x-1">
-                    <span class="text-[10px]">🔊</span>
-                    <input type="range" id="volumeControl" min="0" max="1" step="0.05" value="0.7" class="w-full h-1 bg-amber-200 rounded-lg cursor-pointer">
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <!-- MODAL VISTA MÓVIL / ESCRITORIO -->
     <div id="deviceModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay transition-all duration-500">
         <div class="max-w-md w-full bg-stone-900/95 border border-amber-500/40 rounded-3xl p-8 text-center shadow-2xl text-white space-y-6 transform scale-100 transition-all relative overflow-hidden">
             
@@ -191,6 +157,7 @@
 
     <main id="mainWrapper" class="w-full view-wrapper my-auto z-10 relative space-y-4">
 
+        <!-- BARRA DE PROGRESO -->
         <div class="w-full max-w-xs mx-auto flex items-center justify-between px-2 mb-2">
             <span id="stepIndicatorText" class="text-[10px] font-bold uppercase tracking-widest text-amber-800 font-serif-custom">Paso 1 de 5</span>
             <div class="w-32 h-1.5 bg-amber-200/50 rounded-full overflow-hidden">
@@ -198,6 +165,7 @@
             </div>
         </div>
 
+        <!-- PASO 1: MENSAJE BODA CIVIL -->
         <div id="step1" class="step-card active">
             <section class="botanical-card p-8 sm:p-12 rounded-[2.5rem] text-center relative overflow-hidden space-y-6">
                 <div class="w-14 h-14 rounded-full bg-amber-50 border border-amber-200/80 flex items-center justify-center mx-auto text-amber-700 shadow-sm text-2xl">
@@ -223,6 +191,7 @@
             </section>
         </div>
 
+        <!-- PASO 2: NOMBRES DE LOS NOVIOS -->
         <div id="step2" class="step-card">
             <section class="botanical-card p-8 sm:p-14 rounded-[2.5rem] text-center relative overflow-hidden space-y-6">
                 <svg class="absolute top-2 left-2 w-20 h-20 text-amber-600/30 pointer-events-none" viewBox="0 0 100 100" fill="currentColor">
@@ -260,6 +229,7 @@
             </section>
         </div>
 
+        <!-- PASO 3: FECHA Y CUENTA REGRESIVA -->
         <div id="step3" class="step-card">
             <section class="botanical-card p-8 sm:p-12 rounded-[2.5rem] text-center space-y-6 relative overflow-hidden">
                 <div class="space-y-3">
@@ -308,6 +278,7 @@
             </section>
         </div>
 
+        <!-- PASO 4: LUGAR DEL EVENTO -->
         <div id="step4" class="step-card">
             <section class="botanical-card p-8 sm:p-12 rounded-[2.5rem] text-center space-y-6 relative overflow-hidden">
                 <div class="space-y-3">
@@ -341,6 +312,7 @@
             </section>
         </div>
 
+        <!-- PASO 5: FORMULARIO RSVP -->
         <div id="step5" class="step-card">
             <section class="botanical-card p-8 sm:p-12 rounded-[2.5rem] space-y-6 relative overflow-hidden">
                 
@@ -410,55 +382,7 @@
     </footer>
 
     <script>
-        const audio = document.getElementById('weddingMusic');
-        audio.volume = 0.7;
-        let isStarted = false;
-
-        function startAudioOnFirstInteraction() {
-            if (!isStarted) {
-                audio.play().then(() => {
-                    isStarted = true;
-                    updateMusicUI(true);
-                }).catch(e => console.log(e));
-            }
-        }
-
-        function toggleMusicControls(e) {
-            if (e) e.stopPropagation();
-            const panel = document.getElementById('musicPanel');
-            panel.classList.toggle('hidden');
-        }
-
-        function togglePlayPause(e) {
-            if (e) e.stopPropagation();
-            if (audio.paused) {
-                audio.play();
-                isStarted = true;
-                updateMusicUI(true);
-            } else {
-                audio.pause();
-                updateMusicUI(false);
-            }
-        }
-
-        function updateMusicUI(isPlaying) {
-            const btn = document.getElementById('playPauseBtn');
-            const status = document.getElementById('musicStatusText');
-            if (isPlaying) {
-                btn.innerText = '⏸ Pausa';
-                status.innerText = '▶ Sonando';
-                status.className = 'text-[10px] text-emerald-600 font-bold';
-            } else {
-                btn.innerText = '▶ Reproducir';
-                status.innerText = '⏸ En Pausa';
-                status.className = 'text-[10px] text-amber-600 font-bold';
-            }
-        }
-
-        document.getElementById('volumeControl').addEventListener('input', function(e) {
-            audio.volume = e.target.value;
-        });
-
+        // Animación de hojas cayendo en el fondo
         const canvas = document.getElementById('fallingLeavesCanvas');
         const ctx = canvas.getContext('2d');
         let leaves = [];
@@ -530,6 +454,7 @@
         }
         animateLeaves();
 
+        // Control del Paso a Paso
         let currentStep = 1;
         const totalSteps = 5;
 
@@ -549,7 +474,6 @@
         }
 
         function nextStep() {
-            startAudioOnFirstInteraction();
             if (currentStep < totalSteps) {
                 currentStep++;
                 updateStepView();
@@ -563,6 +487,7 @@
             }
         }
 
+        // Modo Móvil / Escritorio
         function applyViewMode(mode) {
             const wrapper = document.getElementById('mainWrapper');
             const icon = document.getElementById('currentModeIcon');
@@ -598,6 +523,7 @@
             document.getElementById('deviceModal').classList.add('hidden', 'opacity-0', 'pointer-events-none');
         });
 
+        // Envío de Formulario RSVP a Google Sheets
         const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycby_gYkO5_fJnTbmTlaJentm54qsIZwV-1UR4Ih-mWTfv6V2EIkSrO8Oi2y8GS4MInFM/exec";
 
         document.getElementById('rsvpForm').addEventListener('submit', function(e) {
@@ -632,6 +558,7 @@
             });
         });
 
+        // Cuenta Regresiva
         const targetDate = new Date("December 20, 2026 16:00:00").getTime();
 
         setInterval(() => {
